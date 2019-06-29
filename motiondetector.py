@@ -9,12 +9,12 @@ import cv2
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
 ap.add_argument("-v", "--video", help="path to the video file")
-ap.add_argument("-a", "--min-area", type=int, default=500, help="minimum area size")
+ap.add_argument("-a", "--min-area", type=int, default=1000, help="minimum area size")
 args = vars(ap.parse_args())
  
 # if the video argument is None, then we are reading from webcam
 if args.get("video", None) is None:
-	vs = VideoStream(src=0).start()
+	vs = VideoStream(src=1).start()
 	time.sleep(2.0)
  
 # otherwise, we are reading from a video file
@@ -23,6 +23,7 @@ else:
  
 # initialize the first frame in the video stream
 firstFrame = None
+count = 0
 
 # loop over the frames of the video
 while True:
@@ -79,15 +80,18 @@ while True:
  
 	# show the frame and record if the user presses a key
 	cv2.imshow("Security Feed", frame)
-	time.sleep(5)
+	cv2.imwrite('NEW/img%d.jpg' % count, frame)
+	count = count +1
+	time.sleep(3)
 	if(text == "Occupied"):
 		cv2.imwrite("security.jpg",frame)
+		
 		break
 	key = cv2.waitKey(1) & 0xFF
  
 	# if the `q` key is pressed, break from the lop
-	#if key == ord("q"):
-		#break
+	if key == ord("q"):
+		break
  
 # cleanup the camera and close any open windows
 vs.stop() if args.get("video", None) is None else vs.release()
